@@ -80,8 +80,8 @@ import { User } from '@angular/fire/auth';
         <mat-form-field appearance="outline">
           <mat-label>Sexe</mat-label>
           <mat-select formControlName="gender">
-            <mat-option value="masculin">Masculin</mat-option>
-            <mat-option value="bac2">Feminin</mat-option>
+            <mat-option value="Masculin">Masculin</mat-option>
+            <mat-option value="Feminin">Feminin</mat-option>
           </mat-select>
           @if (internerForm.controls.gender.hasError('required')) {
           <mat-error>la sexe est obligatoire</mat-error>
@@ -199,16 +199,24 @@ export class SetInternerComponent {
     college: ['', [Validators.required]],
   });
 
+  ngOnInit(): void {
+    if (this.interner) {
+      this.internerForm.patchValue(this.interner);
+    }
+  }
+
   onSubmit() {
-    // if (this.internerForm.invalid) {
-    //   this.internerForm.markAllAsTouched();
-    //   return;
-    // }
+    if (this.internerForm.invalid) {
+      this.internerForm.markAllAsTouched();
+
+      return;
+    }
 
     const internerCollection = this.fs.internerCol;
-    const internerId = this.fs.creasteDocId(internerCollection);
-    // ? this.interner.id
-    // : this.fs.creasteDocId(internerCollection);
+    //const internerId = this.fs.creasteDocId(internerCollection);
+    const internerId = this.interner
+      ? this.interner.id
+      : this.fs.creasteDocId(internerCollection);
     const interner: Interner<FieldValue> = {
       id: internerId,
       createdAt: serverTimestamp(),
@@ -219,9 +227,9 @@ export class SetInternerComponent {
     this.fs.setInterner(interner);
     this.dialog.closeAll();
 
-    const message = 'Stagiaire modifie  avec success';
-    //'Stagiaire modifie  avec success'
-    // : 'Stagiaire ajoute  avec success';
+    const message = this.interner
+      ? 'Stagiaire modifie  avec success'
+      : 'Stagiaire ajoute  avec success';
     this.snackBar.open(message, '', { duration: 5000 });
   }
 }

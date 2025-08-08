@@ -1,11 +1,11 @@
-type DbId = string;
-export interface ISuperviseur {
-  id?: DbId;
-  nom: string;
-  prenom: string;
-  emailProfessionnel: string;
-  telephoneProfessionnel?: string;
-  titrePoste?: string;
-  departementId: DbId; // Lien vers le Département (ID)
-  userId?: DbId; // Lien optionnel vers un compte Utilisateur si la gestion des logins est séparée
+export interface Supervisor<T> {
+  id: string;
+  name: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  title: string;
+  specialisation: string;
+  createdAt: T;
+  updatedAt?: T;
 }

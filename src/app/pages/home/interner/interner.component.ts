@@ -15,6 +15,7 @@ import { FirestoreService } from '../../../core/services/firebase/firestore.serv
 import { MatSort } from '@angular/material/sort';
 import { Observable, Subscription } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
+import { MatDialog } from '@angular/material/dialog';
 @Component({
   selector: 'app-interner',
   imports: [
@@ -107,9 +108,13 @@ import { MatInputModule } from '@angular/material/input';
           <!-- Action Column -->
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
-            <td mat-cell *matCellDef="let project">
-              <button mat-icon-button><mat-icon>edit</mat-icon></button>
-              <button mat-icon-button><mat-icon>delete</mat-icon></button>
+            <td mat-cell *matCellDef="let interner">
+              <button (click)="OnEditInterner(interner)" mat-icon-button>
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button (click)="OnDeleteInterner(interner)">
+                <mat-icon>delete</mat-icon>
+              </button>
             </td>
           </ng-container>
 
@@ -144,6 +149,7 @@ export default class InternerComponent {
   @ViewChild(MatSort) sort!: MatSort;
   private fs = inject(FirestoreService);
   subscription?: Subscription;
+  dialog = inject(MatDialog);
   projects$?: Observable<Interner<Timestamp>[]>;
   formatedDate = (t?: Timestamp) => this.fs.formatedTimestamp(t);
   displayedColumns: string[] = [
@@ -173,5 +179,16 @@ export default class InternerComponent {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+  OnEditInterner(interner: Interner<Timestamp>) {
+    this.dialog.open(SetInternerComponent, {
+      width: '35rem',
+      disableClose: true,
+      data: interner,
+    });
+    console.log(interner);
+  }
+  OnDeleteInterner(interner: Interner<Timestamp>) {
+    this.fs.deleteData(this.fs.internerCol, interner.id);
   }
 }

@@ -23,7 +23,7 @@ import { StateService } from '../../../core/services/utilities/state.service';
         [opened]="viewPort() >= isMedium || isToggleDrawer()"
       >
         <a routerLink="/interner" mat-menu-item routerLinkActive="active-link">
-          <mat-icon>dataset</mat-icon>
+          <mat-icon>people</mat-icon>
           Stagiaire
         </a>
         <a
@@ -31,8 +31,24 @@ import { StateService } from '../../../core/services/utilities/state.service';
           mat-menu-item
           routerLinkActive="active-link"
         >
-          <mat-icon>people</mat-icon>
+          <mat-icon>dataset</mat-icon>
           Stage</a
+        >
+        <a
+          routerLink="/supervisor"
+          mat-menu-item
+          routerLinkActive="active-link"
+        >
+          <mat-icon>person_2</mat-icon>
+          Superviseur</a
+        >
+        <a
+          routerLink="/departement"
+          mat-menu-item
+          routerLinkActive="active-link"
+        >
+          <mat-icon>description</mat-icon>
+          Departement</a
         >
       </mat-drawer>
       <mat-drawer-content>

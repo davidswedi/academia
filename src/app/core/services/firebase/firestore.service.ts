@@ -17,6 +17,8 @@ import { User } from '@angular/fire/auth';
 
 import { Observable } from 'rxjs';
 import { Interner } from '../../models/stagiaire.model';
+import { Supervisor } from '../../models/superviseur.model';
+import { Internship } from '../../models/stage.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,6 +26,8 @@ import { Interner } from '../../models/stagiaire.model';
 export class FirestoreService {
   private fs = inject(Firestore);
   internerCol = 'interners';
+  supervisorCol = 'supervisors';
+  intershipCol = 'intership';
   //todoCol = (projectId: string) => `${this.projectCol}/${projectId}/todos`;
 
   creasteDocId = (colName: string) => doc(collection(this.fs, colName)).id;
@@ -33,11 +37,25 @@ export class FirestoreService {
     return setDoc(internerDocRef, interner, { merge: true });
   }
 
-  // setTask(projectId: string, t: Task<FieldValue>) {
-  //   const todoColRef = collection(this.fs, this.todoCol(projectId));
-  //   const todoDocRef = doc(todoColRef, t.id);
-  //   return setDoc(todoDocRef, t, { merge: true });
-  // }
+  SetSupervisor(supervisor: Supervisor<FieldValue>) {
+    const supervisorColRef = collection(this.fs, this.supervisorCol);
+    const supervisorDocRef = doc(supervisorColRef, supervisor.id);
+    return setDoc(supervisorDocRef, supervisor, { merge: true });
+  }
+
+  setIntership(internship: Internship<FieldValue>) {
+    const internshipColRef = collection(this.fs, this.intershipCol);
+    const internshipDocRef = doc(internshipColRef, internship.id);
+    return setDoc(internshipDocRef, internship, { merge: true });
+  }
+  getSupervisors() {
+    const supervisorColRef = collection(this.fs, this.supervisorCol);
+    const querySupervisors = query(
+      supervisorColRef,
+      orderBy('createdAt', 'desc')
+    );
+    return collectionData(querySupervisors);
+  }
 
   getInterners() {
     const internerColRef = collection(this.fs, this.internerCol);
@@ -45,7 +63,11 @@ export class FirestoreService {
     const queryInterners = query(internerColRef, orderBy('createdAt', 'desc'));
     return collectionData(queryInterners);
   }
-
+   getInterships(){
+    const intershipColRef = collection(this.fs,this.intershipCol)
+    const internshipQuery = query(intershipColRef,orderBy('createdAt','desc'))
+    return collectionData(internshipQuery)
+   }
   // getTodos(projectId: string, todoStatus: string) {
   //   const todoColRef = collection(this.fs, this.todoCol(projectId));
   //   const queryTodos = query(
