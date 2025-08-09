@@ -225,6 +225,9 @@ export class SetInternshipComponent {
   });
 
   ngOnInit() {
+    // if(this.intership){
+    //   this.internershipForm.patchValue(this.intership)
+    // }
     this.studentsSub = this.fs.getInterners().subscribe((interners) => {
       this.interners = interners as Interner<Timestamp>[];
     });
