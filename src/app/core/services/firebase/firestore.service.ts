@@ -19,6 +19,7 @@ import { Observable } from 'rxjs';
 import { Interner } from '../../models/stagiaire.model';
 import { Supervisor } from '../../models/superviseur.model';
 import { Internship } from '../../models/stage.model';
+import { Payment } from '../../models/payment.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +30,8 @@ export class FirestoreService {
   supervisorCol = 'supervisors';
   intershipCol = 'intership';
   //todoCol = (projectId: string) => `${this.projectCol}/${projectId}/todos`;
+  paymentCol = (intershipId: string) =>
+    `${this.intershipCol}/${intershipId}/payments`;
 
   creasteDocId = (colName: string) => doc(collection(this.fs, colName)).id;
   setInterner(interner: Interner<FieldValue>) {
@@ -48,6 +51,12 @@ export class FirestoreService {
     const internshipDocRef = doc(internshipColRef, internship.id);
     return setDoc(internshipDocRef, internship, { merge: true });
   }
+
+  setPayement(payment: Payment<FieldValue>, intershipcol: string) {
+    const paymentColRef = collection(this.fs, this.paymentCol(intershipcol));
+    const paymentDocRef = doc(paymentColRef, payment.id);
+    return setDoc(paymentDocRef, payment, { merge: true });
+  }
   getSupervisors() {
     const supervisorColRef = collection(this.fs, this.supervisorCol);
     const querySupervisors = query(
@@ -63,11 +72,15 @@ export class FirestoreService {
     const queryInterners = query(internerColRef, orderBy('createdAt', 'desc'));
     return collectionData(queryInterners);
   }
-   getInterships(){
-    const intershipColRef = collection(this.fs,this.intershipCol)
-    const internshipQuery = query(intershipColRef,orderBy('createdAt','desc'))
-    return collectionData(internshipQuery)
-   }
+  getInterships() {
+    const intershipColRef = collection(this.fs, this.intershipCol);
+    const internshipQuery = query(
+      intershipColRef,
+      orderBy('createdAt', 'desc')
+    );
+    return collectionData(internshipQuery);
+  }
+
   // getTodos(projectId: string, todoStatus: string) {
   //   const todoColRef = collection(this.fs, this.todoCol(projectId));
   //   const queryTodos = query(
@@ -77,6 +90,15 @@ export class FirestoreService {
   //   );
   //   return collectionData(queryTodos) as Observable<Task<Timestamp>[]>;
   //}
+  getInternshipPayments(insternshipId: string) {
+    const paymentColeRef = collection(this.fs, this.paymentCol(insternshipId));
+    const queryPayments = query(
+      paymentColeRef,
+      where('intershipId', '==', insternshipId),
+      orderBy('date', 'asc')
+    );
+    return collectionData(queryPayments) as Observable<Payment<Timestamp>[]>;
+  }
   getDocData(colName: string, id: string) {
     return docData(doc(this.fs, colName, id));
   }

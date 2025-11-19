@@ -1,3 +1,4 @@
+import { Payment } from './payment.model';
 import { FieldValue, Timestamp } from '@angular/fire/firestore';
 
 type DbId = string;
@@ -5,15 +6,14 @@ type DbId = string;
 export interface Internship<T> {
   id: string;
   internerId: string;
-  departement: String;
-  supervisor: String;
+  departement: string;
+  supervisor: string;
   range: {
     startDate: T;
     endDate: T;
   };
-  intershipType: String;
+  intershipType: string;
   registrationFee: string;
-  internshipFee: string;
   createdAt: T;
   updatedAt: T;
 }

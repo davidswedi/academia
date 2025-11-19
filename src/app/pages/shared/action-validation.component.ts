@@ -22,7 +22,7 @@ import { Dialog } from '@angular/cdk/dialog';
       <div>
         <mat-icon class="alert-action">warning</mat-icon>
         <h4 class="alert-action">
-          Si vous confirmez l'affectation sera définitivement supprimée
+          Si vous confirmez l'élément sera définitivement supprimé
         </h4>
       </div>
     </mat-dialog-content>

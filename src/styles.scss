@@ -2,7 +2,7 @@
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming
 @use '@angular/material' as mat;
-
+@include mat.core();
 html {
   font-family: "Lato", serif;
   font-weight: 500;
@@ -11,7 +11,7 @@ html {
   color-scheme:light;
   @include mat.theme(
     (
-      color: mat.$azure-palette,
+     color: mat.$azure-palette,
       typography: "Lato",
       density: 0,
     )
@@ -19,7 +19,63 @@ html {
 }/* You can add global styles to this file, and also import other style files */
 
 html, body { height: 100%; }
+html{
+ 
+  --sys--primary: rgb(0 104 116);
+  --sys--surface-tint: rgb(0 104 116);
+  --sys--on-primary: rgb(255 255 255);
+  --sys--primary-container: rgb(0 206 228);
+  --sys--on-primary-container: rgb(0 83 93);
+  --sys--secondary: rgb(51 102 110);
+  --sys--on-secondary: rgb(255 255 255);
+  --sys--secondary-container: rgb(181 232 242);
+  --sys--on-secondary-container: rgb(55 106 114);
+  --sys--tertiary: rgb(120 74 154);
+  --sys--on-tertiary: rgb(255 255 255);
+  --sys--tertiary-container: rgb(219 167 255);
+  --sys--on-tertiary-container: rgb(100 54 133);
+  --sys--error: rgb(186 26 26);
+  --sys--on-error: rgb(255 255 255);
+  --sys--error-container: rgb(255 218 214);
+  --sys--on-error-container: rgb(147 0 10);
+  --sys--background: rgb(244 251 252);
+  --sys--on-background: rgb(22 29 30);
+  --sys--surface: rgb(244 251 252);
+  --sys--on-surface: rgb(22 29 30);
+  --sys--surface-variant: rgb(214 229 232);
+  --sys--on-surface-variant: rgb(60 73 76);
+  --sys--outline: rgb(108 122 124);
+  --sys--outline-variant: rgb(187 201 204);
+  --sys--shadow: rgb(0 0 0);
+  --sys--scrim: rgb(0 0 0);
+  --sys--inverse-surface: rgb(43 50 51);
+  --sys--inverse-on-surface: rgb(235 242 243);
+  --sys--inverse-primary: rgb(43 218 240);
+  --sys--primary-fixed: rgb(152 240 255);
+  --sys--on-primary-fixed: rgb(0 31 36);
+  --sys--primary-fixed-dim: rgb(43 218 240);
+  --sys--on-primary-fixed-variant: rgb(0 79 88);
+  --sys--secondary-fixed: rgb(184 235 245);
+  --sys--on-secondary-fixed: rgb(0 31 36);
+  --sys--secondary-fixed-dim: rgb(156 207 216);
+  --sys--on-secondary-fixed-variant: rgb(23 78 86);
+  --sys--tertiary-fixed: rgb(243 218 255);
+  --sys--on-tertiary-fixed: rgb(46 0 77);
+  --sys--tertiary-fixed-dim: rgb(226 182 255);
+  --sys--on-tertiary-fixed-variant: rgb(95 50 128);
+  --sys--surface-dim: rgb(212 219 221);
+  --sys--surface-bright: rgb(244 251 252);
+  --sys--surface-container-lowest: rgb(255 255 255);
+  --sys--surface-container-low: rgb(238 245 246);
+  --sys--surface-container: rgb(232 239 240);
+  --sys--surface-container-high: rgb(227 233 235);
+  --sys--surface-container-highest: rgb(221 228 229);
+
+}
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
+
+   background: var(--mat-sys-surface);
+   color: var(--mat-sys-on-surface);
   .skeleton {
     background: linear-gradient(
       90deg,
@@ -34,7 +90,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
     .mat-divider {
       border-top-color: var(--mat-sys-outline-variant) !important;
     }
-  
+    .action-button{
+      @include mat.button-overrides((
+        filled-container-shape:red,
+      ))
+    }
     mat-form-field {
       width: 100%;
       margin-bottom: 1rem;
@@ -53,7 +113,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
       border-radius: 8px;
     }
   }
-
+  .alert-action {
+    color: var(--mat-sys-error);
+  }
   @keyframes pulse {
     0% {
       background-position: 200% 0;

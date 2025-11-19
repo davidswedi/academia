@@ -17,6 +17,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, signal } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { ActionValidationComponent } from '../../shared/action-validation.component';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-internship',
   standalone: true,
@@ -30,6 +33,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatButtonModule,
     MatExpansionModule,
     DatePipe,
+    RouterLink,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -52,58 +56,64 @@ import { MatExpansionModule } from '@angular/material/expansion';
       <div class="table-container">
         <table mat-table [dataSource]="dataSource" matSort>
           <!-- Position Column -->
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>N°</th>
-            <td mat-cell *matCellDef="let intership">
-              {{ dataSource.filteredData.indexOf(intership) + 1 }}
-            </td>
-          </ng-container>
+          <span routerLink="/">
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>N°</th>
+              <td mat-cell *matCellDef="let intership">
+                {{ dataSource.filteredData.indexOf(intership) + 1 }}
+              </td>
+            </ng-container>
 
-          <!-- Title Column -->
-          <ng-container matColumnDef="interner">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Stagiaire</th>
-            <td mat-cell *matCellDef="let intership">
-              {{ intership.internerId }}
-            </td>
-          </ng-container>
+            <!-- Title Column -->
+            <ng-container matColumnDef="interner">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Stagiaire
+              </th>
+              <td mat-cell *matCellDef="let intership">
+                {{ intership.internerId }}
+              </td>
+            </ng-container>
 
-          <!-- Possession Column -->
-          <ng-container matColumnDef="departement">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>
-              Departement
-            </th>
-            <td mat-cell *matCellDef="let intership">
-              {{ intership.departement }}
-            </td>
-          </ng-container>
+            <!-- Possession Column -->
+            <ng-container matColumnDef="departement">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Departement
+              </th>
+              <td mat-cell *matCellDef="let intership">
+                {{ intership.departement }}
+              </td>
+            </ng-container>
 
-          <!-- Contributors Column -->
-          <ng-container matColumnDef="supervisor">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Encadreur</th>
-            <td mat-cell *matCellDef="let intership">
-              {{ intership.supervisor }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="startDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Debut</th>
-            <td mat-cell *matCellDef="let intership">
-              {{
-                intership.range.startDate.seconds * 1000 +
-                  intership.range.startDate.nanoseconds / 1000000
-                  | date : 'dd/MM/yyyy'
-              }}
-            </td>
-          </ng-container>
-          <ng-container matColumnDef="endDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fin</th>
-            <td mat-cell *matCellDef="let intership">
-              {{
-                intership.range.endDate.seconds * 1000 +
-                  intership.range.endDate.nanoseconds / 1000000
-                  | date : 'dd/MM/yyyy'
-              }}
-            </td>
-          </ng-container>
+            <!-- Contributors Column -->
+            <ng-container matColumnDef="supervisor">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                Encadreur
+              </th>
+              <td mat-cell *matCellDef="let intership">
+                {{ intership.supervisor }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="startDate">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Debut</th>
+              <td mat-cell *matCellDef="let intership">
+                {{
+                  intership.range.startDate.seconds * 1000 +
+                    intership.range.startDate.nanoseconds / 1000000
+                    | date : 'dd/MM/yyyy'
+                }}
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="endDate">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Fin</th>
+              <td mat-cell *matCellDef="let intership">
+                {{
+                  intership.range.endDate.seconds * 1000 +
+                    intership.range.endDate.nanoseconds / 1000000
+                    | date : 'dd/MM/yyyy'
+                }}
+              </td>
+            </ng-container>
+          </span>
           <!-- Action Column -->
           <ng-container matColumnDef="action">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
@@ -111,8 +121,13 @@ import { MatExpansionModule } from '@angular/material/expansion';
               <button (click)="OnEditSupervisor(intership)" mat-icon-button>
                 <mat-icon>edit</mat-icon>
               </button>
-              <button mat-icon-button (click)="OnEditSupervisor(intership)">
-                <mat-icon>delete</mat-icon>
+              <button
+                mat-icon-button
+                (click)="
+                  callActionValidationComponent(intership.id, internshipCol)
+                "
+              >
+                <mat-icon class="alert-action">delete</mat-icon>
               </button>
             </td>
           </ng-container>
@@ -145,44 +160,20 @@ import { MatExpansionModule } from '@angular/material/expansion';
           aria-label="Séléctionnez la page des superviseurs"
         ></mat-paginator>
       </div>
-
-      <mat-accordion>
-        <mat-expansion-panel hideToggle>
-          <mat-expansion-panel-header>
-            <mat-panel-title> This is the expansion title </mat-panel-title>
-            <mat-panel-description>
-              This is a summary of the content
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <p>This is the primary content of the panel.</p>
-        </mat-expansion-panel>
-        <mat-expansion-panel
-          (opened)="panelOpenState.set(true)"
-          (closed)="panelOpenState.set(false)"
-        >
-          <mat-expansion-panel-header>
-            <mat-panel-title> Self aware panel </mat-panel-title>
-            <mat-panel-description>
-              Currently I am {{ panelOpenState() ? 'open' : 'closed' }}
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-          <p>I'm visible because I am open</p>
-        </mat-expansion-panel>
-      </mat-accordion>
     </main>
   `,
-  styles: ``,
+  styles: `
+  table{
+    width:100%;
+  }
+  span{
+    cursor:pointer;
+  }
+  `,
 })
 export default class InternshipComponent {
-  readonly panelOpenState = signal(false);
-  applyFilter($event: KeyboardEvent) {
-    throw new Error('Method not implemented.');
-  }
-  OnEditSupervisor(_t88: any) {
-    throw new Error('Method not implemented.');
-  }
   setIntership = SetInternshipComponent;
-
+  actionComponent = ActionValidationComponent;
   private fs = inject(FirestoreService);
   intership!: Observable<Internship<Timestamp[]>>;
   dataSource = new MatTableDataSource<Internship<FieldValue>>();
@@ -190,7 +181,8 @@ export default class InternshipComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   private dialog = inject(MatDialog);
-
+  internshipCol = this.fs.intershipCol;
+  private snackBar = inject(MatSnackBar);
   displayedColumns: String[] = [
     'id',
     'interner',
@@ -203,7 +195,33 @@ export default class InternshipComponent {
   ngOnInit() {
     this.subscription = this.fs.getInterships().subscribe((intership) => {
       this.dataSource.data = intership as Internship<Timestamp>[];
-      console.log(intership);
+    });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+  OnEditSupervisor(intership: Internship<Timestamp>) {
+    this.dialog.open(this.setIntership, {
+      width: '35rem',
+      disableClose: true,
+      data: intership,
+    });
+  }
+
+  callActionValidationComponent(docId: string, colName: string) {
+    this.dialog.open(this.actionComponent, {
+      width: '32rem',
+      disableClose: true,
+      data: {
+        docId,
+        colName,
+      },
     });
   }
 }

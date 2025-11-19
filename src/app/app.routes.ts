@@ -22,6 +22,12 @@ export const routes: Routes = [
     ...canActivate(redirectUnauthorizedToLogin),
     children: [
       {
+        title: `Tableau de bord`,
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./pages/home/dashboard/dashboard.component'),
+      },
+      {
         title: `Stagiaire - ${APP_NAME}`,
         path: 'interner',
         loadComponent: () => import('./pages/home/interner/interner.component'),
@@ -39,10 +45,15 @@ export const routes: Routes = [
           import('./pages/home/supervisor/supervisor.component'),
       },
       {
-        title: `Departement- ${APP_NAME}`,
-        path: 'departement',
+        title: `Payment- ${APP_NAME}`,
+        path: 'payment',
+        loadComponent: () => import('./pages/home/payment/payment.component'),
+      },
+      {
+        title: `Modules- ${APP_NAME}`,
+        path: 'modules',
         loadComponent: () =>
-          import('./pages/home/departement/departement.component'),
+          import('./pages/home/learningmodules/learningmodules.component'),
       },
       {
         path: '',

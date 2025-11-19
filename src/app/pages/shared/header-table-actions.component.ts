@@ -3,6 +3,9 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ComponentType } from '@angular/cdk/portal';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { ExportExcelService } from '../../core/services/utilities/export.excel.service';
+import { WindowsObserverService } from '../../core/services/utilities/windows-observer.service';
+import { IS_MEDIUM } from '../../app.constants';
 @Component({
   selector: 'app-header-table-actions',
   imports: [MatDialogModule, MatButtonModule, MatIconModule],
@@ -11,17 +14,30 @@ import { MatIconModule } from '@angular/material/icon';
       style="display: flex; justify-content: space-between; align-items: center; margin: 0 1rem"
     >
       <h2>{{ headerTitle() }}</h2>
+      @if (viewPort() <= screenWidth) {
       <button mat-flat-button (click)="onNewInterner()">
+        <mat-icon>add</mat-icon>
+      </button>
+      } @else {
+      <button class="add" mat-flat-button (click)="onNewInterner()">
         {{ buttonLabel() }}
       </button>
+      }
     </header>
   `,
-  styles: ``,
+  styles: `
+  .add{
+    padding:1rem;
+  }
+  `,
 })
 export class HeaderTableActionsComponent {
   private dialog = inject(MatDialog);
+  screenWidth = IS_MEDIUM;
+  viewPort = inject(WindowsObserverService).width;
   headerTitle = input.required();
   buttonLabel = input.required();
+
   @Input() dialogComponent!: ComponentType<unknown>;
 
   onNewInterner() {

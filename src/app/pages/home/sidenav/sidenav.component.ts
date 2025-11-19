@@ -42,13 +42,13 @@ import { StateService } from '../../../core/services/utilities/state.service';
           <mat-icon>person_2</mat-icon>
           Superviseur</a
         >
-        <a
-          routerLink="/departement"
-          mat-menu-item
-          routerLinkActive="active-link"
+        <a routerLink="/modules" mat-menu-item routerLinkActive="active-link">
+          <mat-icon>book</mat-icon>
+          Modules</a
         >
-          <mat-icon>description</mat-icon>
-          Departement</a
+        <a routerLink="/payment" mat-menu-item routerLinkActive="active-link">
+          <mat-icon>attach_money</mat-icon>
+          Payment</a
         >
       </mat-drawer>
       <mat-drawer-content>

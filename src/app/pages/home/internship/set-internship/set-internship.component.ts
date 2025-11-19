@@ -1,3 +1,4 @@
+import { Payment } from './../../../../core/models/payment.model';
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import {
   MAT_DIALOG_DATA,
@@ -8,14 +9,7 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AsyncPipe, JsonPipe } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import {
-  FormBuilder,
-  FormsModule,
-  FormControl,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -33,6 +27,15 @@ import { Supervisor } from '../../../../core/models/superviseur.model';
 import { Internship } from '../../../../core/models/stage.model';
 import { Dialog } from '@angular/cdk/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { AuthService } from '../../../../core/services/firebase/auth.service';
+import { User } from '@angular/fire/auth';
+import {
+  FormBuilder,
+  FormControl,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 @Component({
   selector: 'app-set-internship',
   imports: [
@@ -153,19 +156,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
             }
           </mat-form-field>
           <mat-form-field appearance="outline">
-            <mat-label>Frais Stage</mat-label>
-            <input
-              matInput
-              #titleInput
-              maxlength="50"
-              placeholder="50"
-              formControlName="internshipFee"
-            />
-            <mat-hint align="end">{{ titleInput.value.length }}/50</mat-hint>
-          </mat-form-field>
-          <mat-form-field appearance="outline">
             <mat-label>Devise</mat-label>
-            <mat-select formControlName="intershipType">
+            <mat-select formControlName="currency">
               <mat-option value="USD">USD</mat-option>
               <mat-option value="CDF">CDF</mat-option>
             </mat-select>
@@ -190,7 +182,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close>Annuler</button>
-      <button mat-flat-button (click)="onSubmit()">Enregistrer</button>
+      @let user = user$ | async ;
+      <button mat-flat-button (click)="onSubmit(user)">Enregistrer</button>
     </mat-dialog-actions>`,
   styles: `
    mat-form-field{
@@ -211,6 +204,8 @@ export class SetInternshipComponent {
   internshipCol = this.fs.intershipCol;
   dialog = inject(Dialog);
   snackBar = inject(MatSnackBar);
+  authService = inject(AuthService);
+  user$ = this.authService.user;
   internershipForm = this.fb.nonNullable.group({
     internerId: ['', Validators.required],
     departement: ['', Validators.required],
@@ -220,21 +215,26 @@ export class SetInternshipComponent {
       endDate: new FormControl<Date>(new Date(), Validators.required),
     }),
     intershipType: ['', Validators.required],
+    currency: ['', Validators.required],
     registrationFee: ['', Validators.required],
-    internshipFee: ['', Validators.required],
   });
 
   ngOnInit() {
-    // if(this.intership){
-    //   this.internershipForm.patchValue(this.intership)
-    // }
+    if (this.intership) {
+      this.internershipForm.patchValue({
+        internerId: this.intership.internerId,
+        departement: this.intership.departement,
+        supervisor: this.intership.supervisor,
+        intershipType: this.intership.intershipType,
+        registrationFee: this.intership.registrationFee,
+      });
+    }
     this.studentsSub = this.fs.getInterners().subscribe((interners) => {
       this.interners = interners as Interner<Timestamp>[];
     });
     this.supervisorSub = this.fs.getSupervisors().subscribe((supervisors) => {
       this.supervisors = supervisors as Supervisor<Timestamp>[];
     });
-    console.log(this.interners);
     this.filteredOptions = this.internershipForm
       .get('internerId')!
       .valueChanges.pipe(
@@ -249,7 +249,12 @@ export class SetInternshipComponent {
       option.name.toLowerCase().includes(filterValue)
     );
   }
-  onSubmit() {
+  onSubmit(user: User | null) {
+    if (this.internershipForm.invalid) {
+      this.internershipForm.markAllAsTouched();
+
+      return;
+    }
     const internShip: Internship<FieldValue> = {
       id: this.intership
         ? this.intership.id
@@ -266,18 +271,9 @@ export class SetInternshipComponent {
       },
       supervisor: this.internershipForm.getRawValue().supervisor,
       intershipType: this.internershipForm.getRawValue().intershipType,
-      registrationFee: this.internershipForm.getRawValue().internshipFee,
-      internshipFee: this.internershipForm.getRawValue().internshipFee,
+      registrationFee: this.internershipForm.getRawValue().registrationFee,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
-
-      // startDate: Timestamp.fromDate(
-      //   this.internershipForm.getRawValue().range.startDate ?? new Date()
-      // ),
-      // endDate: Timestamp.fromDate(
-      //   this.internershipForm.getRawValue().range.endDate ?? new Date()
-      // ),
-      // ...this.internershipForm.getRawValue(),
     };
     this.fs.setIntership(internShip);
     this.dialog.closeAll();
