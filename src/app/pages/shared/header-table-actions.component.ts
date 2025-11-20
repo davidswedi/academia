@@ -15,20 +15,22 @@ import { IS_MEDIUM } from '../../app.constants';
     >
       <h2>{{ headerTitle() }}</h2>
       @if (viewPort() <= screenWidth) {
-      <button mat-flat-button (click)="onNewInterner()">
+      <button mat-icon-button (click)="onNewInterner()">
         <mat-icon>add</mat-icon>
       </button>
       } @else {
-      <button class="add" mat-flat-button (click)="onNewInterner()">
+      <button
+        class="primary-background"
+        mat-flat-button
+        (click)="onNewInterner()"
+      >
         {{ buttonLabel() }}
       </button>
       }
     </header>
   `,
   styles: `
-  .add{
-    padding:1rem;
-  }
+  
   `,
 })
 export class HeaderTableActionsComponent {

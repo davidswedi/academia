@@ -176,6 +176,13 @@ import { User } from '@angular/fire/auth';
     width:49%;
     margin:0 2px;
   }
+  /* Make form fields full width on small screens */
+  @media (max-width: 600px) {
+    mat-form-field{
+      width:100% !important;
+      margin: 0 0 0.5rem 0;
+    }
+  }
   `,
 })
 export class SetInternerComponent {

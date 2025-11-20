@@ -19,6 +19,9 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActionValidationComponent } from '../../shared/action-validation.component';
 import { ExportExcelService } from '../../../core/services/utilities/export.excel.service';
 import { TitleCasePipe } from '@angular/common';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { IS_MEDIUM } from '../../../app.constants';
+import { WindowsObserverService } from '../../../core/services/utilities/windows-observer.service';
 
 @Component({
   selector: 'app-interner',
@@ -42,6 +45,7 @@ import { TitleCasePipe } from '@angular/common';
         [dialogComponent]="setInterner"
         filName="fileName"
       ></app-header-table-actions>
+      @if (viewPort() >= mediumWidth) {
       <button mat-icon-button (click)="exportExcel()">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -86,6 +90,7 @@ import { TitleCasePipe } from '@angular/common';
           ></path>
         </svg>
       </button>
+      }
     </div>
 
     <main style="margin:1rem">
@@ -125,12 +130,14 @@ import { TitleCasePipe } from '@angular/common';
               {{ interner.lastname }}
             </td>
           </ng-container>
+
           <ng-container matColumnDef="gender">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Sexe</th>
             <td mat-cell *matCellDef="let interner">
               {{ interner.gender }}
             </td>
           </ng-container>
+
           <ng-container matColumnDef="phone">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Télephone</th>
             <td mat-cell *matCellDef="let interner">
@@ -143,6 +150,7 @@ import { TitleCasePipe } from '@angular/common';
               {{ interner.email }}
             </td>
           </ng-container>
+
           <ng-container matColumnDef="expand">
             <th mat-header-cell *matHeaderCellDef aria-label="row actions">
               &nbsp;
@@ -240,7 +248,7 @@ import { TitleCasePipe } from '@angular/common';
     }
   }
   table {
-  width: 100%;
+  width:80%;
 }
 
 tr.example-detail-row {
@@ -310,11 +318,12 @@ tr.example-element-row:not(.example-expanded-row):active {
 .example-toggle-button-expanded {
   transform: rotate(180deg);
 }
-
   `,
 })
 export default class InternerComponent {
   setInterner = SetInternerComponent;
+  mediumWidth = IS_MEDIUM;
+  viewPort = inject(WindowsObserverService).width;
   dataSource = new MatTableDataSource<Interner<Timestamp>>();
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -327,14 +336,8 @@ export default class InternerComponent {
   actionComponent = ActionValidationComponent;
   formatedDate = (t?: Timestamp) => this.fs.formatedTimestamp(t);
   fileName = 'listeStagiaire.xlsx';
-  displayedColumns: string[] = [
-    'id',
-    'name',
-    'lastname',
-    'gender',
-    'phone',
-    'email',
-  ];
+  displayedColumns: string[] = ['id', 'name', 'gender', 'phone'];
+  private bo = inject(BreakpointObserver);
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -343,9 +346,27 @@ export default class InternerComponent {
     this.subscription = this.fs.getInterners().subscribe((interners) => {
       this.dataSource.data = interners as Interner<Timestamp>[];
     });
+    // Use CDK BreakpointObserver to switch visible columns on small screens
+    this.bo.observe([Breakpoints.Handset]).subscribe((state) => {
+      if (state.matches) {
+        // small screens: show only Nom, PostNom, Sexe
+        this.columnsToDisplay = ['name', 'lastname', 'gender'];
+      } else {
+        // larger screens: show full set
+        this.columnsToDisplay = [
+          'id',
+          'lastname',
+          'name',
+          'gender',
+          'phone',
+          'email',
+        ];
+      }
+      this.columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
+    });
   }
 
-  columnsToDisplay = ['id', 'name', 'lastname', 'gender', 'phone', 'email'];
+  columnsToDisplay = ['id', 'name', 'gender', 'phone'];
   columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
   expandedElement!: PeriodicElement | null;
 

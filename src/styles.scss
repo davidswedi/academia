@@ -116,6 +116,9 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif;
   .alert-action {
     color: var(--mat-sys-error);
   }
+  .primary-background{
+    color: var(--mat-sys-error);
+  }
   @keyframes pulse {
     0% {
       background-position: 200% 0;
