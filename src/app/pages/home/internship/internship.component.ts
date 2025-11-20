@@ -20,6 +20,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { ActionValidationComponent } from '../../shared/action-validation.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'app-internship',
   standalone: true,
@@ -149,7 +150,11 @@ import { RouterLink } from '@angular/router';
 
           <!-- Row shown when there is no matching data. -->
           <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell" colspan="5" align="center">
+            <td
+              class="mat-cell"
+              [attr.colspan]="displayedColumns.length"
+              align="center"
+            >
               Aucune donnée à afficher
             </td>
           </tr>
@@ -163,6 +168,12 @@ import { RouterLink } from '@angular/router';
     </main>
   `,
   styles: `
+  mat-form-field{
+    width:49%;
+    margin:0 2px;
+  }
+  /* Make form fields full width on small screens */
+ 
   table{
     width:100%;
   }
@@ -175,6 +186,7 @@ export default class InternshipComponent {
   setIntership = SetInternshipComponent;
   actionComponent = ActionValidationComponent;
   private fs = inject(FirestoreService);
+  private bo = inject(BreakpointObserver);
   intership!: Observable<Internship<Timestamp[]>>;
   dataSource = new MatTableDataSource<Internship<FieldValue>>();
   subscription!: Subscription;
@@ -183,7 +195,7 @@ export default class InternshipComponent {
   private dialog = inject(MatDialog);
   internshipCol = this.fs.intershipCol;
   private snackBar = inject(MatSnackBar);
-  displayedColumns: String[] = [
+  displayedColumns: string[] = [
     'id',
     'interner',
     'departement',
@@ -195,6 +207,24 @@ export default class InternshipComponent {
   ngOnInit() {
     this.subscription = this.fs.getInterships().subscribe((intership) => {
       this.dataSource.data = intership as Internship<Timestamp>[];
+    });
+    // Observe handset breakpoint and switch visible columns on small screens
+    this.bo.observe([Breakpoints.Handset]).subscribe((state) => {
+      if (state.matches) {
+        // small screens: show only interner (name), supervisor and actions
+        this.displayedColumns = ['interner', 'supervisor', 'action'];
+      } else {
+        // larger screens: full set
+        this.displayedColumns = [
+          'id',
+          'interner',
+          'departement',
+          'supervisor',
+          'startDate',
+          'endDate',
+          'action',
+        ];
+      }
     });
   }
 

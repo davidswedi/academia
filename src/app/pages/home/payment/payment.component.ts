@@ -17,6 +17,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SetpaymentComponent } from './setpayment/setpayment.component';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-payment',
@@ -121,7 +122,11 @@ import { SetpaymentComponent } from './setpayment/setpayment.component';
 
         <!-- Row shown when there is no matching data. -->
         <tr class="mat-row" *matNoDataRow>
-          <td class="mat-cell" colspan="5" align="center">
+          <td
+            class="mat-cell"
+            [attr.colspan]="displayedColumns.length"
+            align="center"
+          >
             Aucune donnée à afficher
           </td>
         </tr>
@@ -139,6 +144,7 @@ export default class PaymentComponent {
   setIntership!: ComponentType<unknown>;
 
   private fs = inject(FirestoreService);
+  private bo = inject(BreakpointObserver);
   intership!: Observable<Internship<Timestamp[]>>;
   dataSource = new MatTableDataSource<Internship<FieldValue>>();
   subscription!: Subscription;
@@ -148,7 +154,7 @@ export default class PaymentComponent {
   internshipCol = this.fs.intershipCol;
   private snackBar = inject(MatSnackBar);
   newPayment = SetpaymentComponent;
-  displayedColumns: String[] = [
+  displayedColumns: string[] = [
     'id',
     'interner',
     'departement',
@@ -160,6 +166,23 @@ export default class PaymentComponent {
   ngOnInit() {
     this.subscription = this.fs.getInterships().subscribe((intership) => {
       this.dataSource.data = intership as Internship<Timestamp>[];
+    });
+    // switch visible columns on handset (mobile) using CDK BreakpointObserver
+    this.bo.observe([Breakpoints.Handset]).subscribe((state) => {
+      if (state.matches) {
+        // small screens: show interner, departement and action
+        this.displayedColumns = ['interner', 'departement', 'action'];
+      } else {
+        this.displayedColumns = [
+          'id',
+          'interner',
+          'departement',
+          'supervisor',
+          'startDate',
+          'endDate',
+          'action',
+        ];
+      }
     });
   }
 

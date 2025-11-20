@@ -186,9 +186,11 @@ import {
       <button mat-flat-button (click)="onSubmit(user)">Enregistrer</button>
     </mat-dialog-actions>`,
   styles: `
-   mat-form-field{
-    width:49%;
-    margin:0 2px;
+    @media (max-width: 600px) {
+    mat-form-field{
+      width:100% !important;
+      margin: 0 0 0.5rem 0;
+    }
   }
   `,
 })

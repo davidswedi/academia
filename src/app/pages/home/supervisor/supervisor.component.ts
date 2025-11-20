@@ -15,6 +15,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
+import { WindowsObserverService } from '../../../core/services/utilities/windows-observer.service';
+import { IS_MEDIUM } from '../../../app.constants';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 @Component({
   selector: 'app-supervisor',
   imports: [
@@ -115,7 +118,11 @@ import { MatDialog } from '@angular/material/dialog';
 
           <!-- Row shown when there is no matching data. -->
           <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell" colspan="5" align="center">
+            <td
+              class="mat-cell"
+              [attr.colspan]="displayedColumns.length"
+              align="center"
+            >
               Aucune donnée à afficher
             </td>
           </tr>
@@ -137,9 +144,12 @@ export default class SupervisorComponent {
   @ViewChild(MatSort) sort!: MatSort;
   private dialog = inject(MatDialog);
   private fs = inject(FirestoreService);
+  private bo = inject(BreakpointObserver);
   supervisors$!: Observable<Supervisor<Timestamp[]>>;
   subscription!: Subscription;
-  displayedColumns: String[] = [
+  viewPort = inject(WindowsObserverService).width;
+  mediumWidth = IS_MEDIUM;
+  displayedColumns: string[] = [
     'id',
     'name',
     'lastname',
@@ -157,6 +167,24 @@ export default class SupervisorComponent {
   ngOnInit() {
     this.subscription = this.fs.getSupervisors().subscribe((superivors) => {
       this.datasource.data = superivors as Supervisor<Timestamp>[];
+    });
+    // Update visible columns based on handset breakpoint (mobile-first)
+    this.bo.observe([Breakpoints.Handset]).subscribe((state) => {
+      if (state.matches) {
+        // small screens: only show name, title and action
+        this.displayedColumns = ['name', 'title', 'action'];
+      } else {
+        // larger screens: show full set
+        this.displayedColumns = [
+          'id',
+          'name',
+          'lastname',
+          'title',
+          'specialisation',
+          'phone',
+          'action',
+        ];
+      }
     });
   }
   OnEditSupervisor(supervisor: Supervisor<Timestamp>) {
