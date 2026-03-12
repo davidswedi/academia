@@ -1,3 +1,5 @@
+import { AsyncPipe } from '@angular/common';
+import { User } from '@angular/fire/auth';
 import { Component, computed, inject } from '@angular/core';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
@@ -6,6 +8,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { IS_MEDIUM } from '../../../app.constants';
 import { WindowsObserverService } from '../../../core/services/utilities/windows-observer.service';
 import { StateService } from '../../../core/services/utilities/state.service';
+import { AuthService } from '../../../core/services/firebase/auth.service';
+import { FirestoreService } from '../../../core/services/firebase/firestore.service';
 @Component({
   selector: 'app-sidenav',
   imports: [
@@ -22,34 +26,36 @@ import { StateService } from '../../../core/services/utilities/state.service';
         [mode]="viewPort() >= isMedium ? 'side' : 'over'"
         [opened]="viewPort() >= isMedium || isToggleDrawer()"
       >
-        <a routerLink="/interner" mat-menu-item routerLinkActive="active-link">
+        <a routerLink="dashboard" mat-menu-item routerLinkActive="active-link">
+          <mat-icon>home</mat-icon>
+          Accueil</a
+        >
+        <a routerLink="interner" mat-menu-item routerLinkActive="active-link">
           <mat-icon>people</mat-icon>
           Stagiaire
         </a>
-        <a
-          routerLink="/internship"
-          mat-menu-item
-          routerLinkActive="active-link"
-        >
+        <a routerLink="internship" mat-menu-item routerLinkActive="active-link">
           <mat-icon>dataset</mat-icon>
           Stage</a
         >
-        <a
-          routerLink="/supervisor"
-          mat-menu-item
-          routerLinkActive="active-link"
-        >
+        @if (isAdmin) {
+        <a routerLink="supervisor" mat-menu-item routerLinkActive="active-link">
           <mat-icon>person_2</mat-icon>
           Superviseur</a
         >
-        <a routerLink="/modules" mat-menu-item routerLinkActive="active-link">
+        <a routerLink="modules" mat-menu-item routerLinkActive="active-link">
           <mat-icon>book</mat-icon>
           Modules</a
         >
-        <a routerLink="/payment" mat-menu-item routerLinkActive="active-link">
-          <mat-icon>attach_money</mat-icon>
-          Payment</a
+        <a routerLink="users" mat-menu-item routerLinkActive="active-link">
+          <mat-icon
+            ><span class="material-symbols-outlined">
+              account_circle
+            </span></mat-icon
+          >
+          Utilisateurs</a
         >
+        }
       </mat-drawer>
       <mat-drawer-content>
         <router-outlet></router-outlet>
@@ -65,15 +71,25 @@ import { StateService } from '../../../core/services/utilities/state.service';
     }
     
     .active-link {
-      background: var(--mat-sys-outline-variant);
+      background: var(--primary-color);
     }
   `,
 })
 export class SidenavComponent {
   isMedium = IS_MEDIUM;
-
+  auth = inject(AuthService);
+  user$ = this.auth.user;
   viewPort = inject(WindowsObserverService).width;
-
+  fs = inject(FirestoreService);
   state = inject(StateService);
   isToggleDrawer = computed(() => this.state.isToggleDrawer());
+  isAdmin : boolean = false;
+  ngOnInit() {
+    this.user$.subscribe(user=>{
+      const userEmail = user?.email;
+      this.fs.getuser(userEmail!).subscribe(userData=>{
+        this. isAdmin = userData[0]?.role === 'admin' ? true : false;
+      })
+    })
+  }
 }

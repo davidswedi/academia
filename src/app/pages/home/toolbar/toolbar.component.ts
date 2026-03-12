@@ -34,9 +34,7 @@ import { Router } from '@angular/router';
           <mat-icon>menu</mat-icon>
         </button>
         }
-        <span
-          ><b>{{ appName }}</b></span
-        >
+        <span><b>Dashboard</b></span>
       </div>
       <div class="avatar-container">
         <button mat-icon-button matTooltip="Notifications">

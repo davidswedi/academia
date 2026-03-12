@@ -186,7 +186,12 @@ import {
       <button mat-flat-button (click)="onSubmit(user)">Enregistrer</button>
     </mat-dialog-actions>`,
   styles: `
-    @media (max-width: 600px) {
+    mat-form-field{
+    width:49%;
+    margin:0 2px;
+  }
+  /* Make form fields full width on small screens */
+  @media (max-width: 600px) {
     mat-form-field{
       width:100% !important;
       margin: 0 0 0.5rem 0;
@@ -281,7 +286,7 @@ export class SetInternshipComponent {
     this.dialog.closeAll();
 
     const message = this.intership
-      ? 'Modificatio réussie !'
+      ? 'Modification réussie !'
       : 'Affactation effectuée avec succès !';
 
     this.snackBar.open(message, '', { duration: 5000 });

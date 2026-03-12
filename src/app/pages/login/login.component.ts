@@ -11,7 +11,8 @@ import { Subscription } from 'rxjs';
 import { User } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { APP_NAME, COMPANY_NAME } from '../../app.constants';
-
+import { FirestoreService } from '../../core/services/firebase/firestore.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-login',
   imports: [
@@ -22,6 +23,7 @@ import { APP_NAME, COMPANY_NAME } from '../../app.constants';
     MatButtonModule,
     FormsModule,
     LoginSkeletonComponent,
+    MatSnackBarModule,
   ],
   templateUrl: './login.component.html',
   styles: `
@@ -44,8 +46,10 @@ export default class LoginComponent implements OnInit, OnDestroy {
   loading = signal(true);
   auth = inject(AuthService);
   authSub?: Subscription;
+  fs = inject(FirestoreService);
   private router = inject(Router);
   emailSent = signal('');
+  snackbar = inject(MatSnackBar);
   loginWithGoogle = async () => {
     try {
       this.loading.set(true);
@@ -74,7 +78,7 @@ export default class LoginComponent implements OnInit, OnDestroy {
   resetState = () => this.emailSent.set('');
   ngOnInit(): void {
     //watching auth state
-    this.authSub = this.auth.authState.subscribe((user: User | null) => {
+    this.authSub = this.auth.authState.subscribe(async (user: User | null) => {
       this.loading.set(false);
       //On email redirection, initialize authentication
       if (this.router.url.includes('login?apiKey=')) {
@@ -83,7 +87,12 @@ export default class LoginComponent implements OnInit, OnDestroy {
       }
 
       if (user) {
-        this.router.navigate(['/']);
+        if (await this.fs.userExists(user.email!)) {
+          this.router.navigate(['/']);
+        } else {
+           this.snackbar.open('Cette adresse mail est inconnue !', 'Ok');
+          this.router.navigate(['/login']);
+        }
       }
     });
   }

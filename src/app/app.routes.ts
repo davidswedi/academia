@@ -15,6 +15,21 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login.component'),
     ...canActivate(redirectLoggedInToHome),
   },
+  // {
+  //   title: `Accueil - ${APP_NAME}`,
+  //   path: '',
+  //   loadComponent: () => import('./pages/landing-page/landing-page.component'),
+  // },
+  {
+    title: 'Inscription',
+    path: 'enrollement',
+    loadComponent: () => import('./pages/enrollements/enrollements.component'),
+  },
+  {
+    title: `Formation - ${APP_NAME}`,
+    path: 'module/:id',
+    loadComponent: () => import('./pages/landing-page/module/module.component'),
+  },
   {
     title: `${APP_NAME}`,
     path: '',
@@ -54,6 +69,14 @@ export const routes: Routes = [
         path: 'modules',
         loadComponent: () =>
           import('./pages/home/learningmodules/learningmodules.component'),
+      },
+      {
+        title: `Utilisateur- ${APP_NAME}`,
+        path: 'users',
+        loadComponent: () =>
+          import('./pages/home/users/users.component').then(
+            (m) => m.UsersComponent
+          ),
       },
       {
         path: '',

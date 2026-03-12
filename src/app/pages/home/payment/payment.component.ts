@@ -102,7 +102,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
           <td mat-cell *matCellDef="let intership">
-            <button mat-button (click)="onPaymentAction(intership.id)">
+            <button mat-button (click)="onPaymentAction(intership.id,intership.internerId)">
               Payement
             </button>
           </td>
@@ -195,11 +195,11 @@ export default class PaymentComponent {
     }
   }
 
-  onPaymentAction(intershipId: string) {
+  onPaymentAction(intershipId: string,StudentName:string) {
     this.dialog.open(this.newPayment, {
       width: '32rem',
       disableClose: true,
-      data: intershipId,
+      data: {intershipId,StudentName},
     });
   }
 }

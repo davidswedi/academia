@@ -15,12 +15,13 @@ import { MatDivider } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, signal } from '@angular/core';
+import { ChangeDetectionStrategy, signal, AfterViewInit } from '@angular/core';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { ActionValidationComponent } from '../../shared/action-validation.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { RouterLink } from '@angular/router';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import { SetpaymentComponent } from '../payment/setpayment/setpayment.component';
 @Component({
   selector: 'app-internship',
   standalone: true,
@@ -130,6 +131,12 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
               >
                 <mat-icon class="alert-action">delete</mat-icon>
               </button>
+                <button
+                mat-icon-button
+                (click)="onPaymentAction(intership.id,intership.internerId)"
+              >
+                <mat-icon>attach_money</mat-icon>
+              </button>
             </td>
           </ng-container>
 
@@ -182,7 +189,8 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
   }
   `,
 })
-export default class InternshipComponent {
+export default class InternshipComponent implements AfterViewInit {
+  newPayment = SetpaymentComponent;
   setIntership = SetInternshipComponent;
   actionComponent = ActionValidationComponent;
   private fs = inject(FirestoreService);
@@ -228,6 +236,24 @@ export default class InternshipComponent {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    // basic filter across a few likely fields
+    this.dataSource.filterPredicate = (data: any, filter: string) => {
+      const f = filter.trim().toLowerCase();
+      return (
+        (data.internerId ?? '') +
+        ' ' +
+        (data.departement ?? '') +
+        ' ' +
+        (data.supervisor ?? '')
+      )
+        .toLowerCase()
+        .includes(f);
+    };
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -252,6 +278,13 @@ export default class InternshipComponent {
         docId,
         colName,
       },
+    });
+  }
+  onPaymentAction(intershipId: string,StudentName:string) {
+    this.dialog.open(this.newPayment, {
+      width: '32rem',
+      disableClose: true,
+      data: {intershipId,StudentName},
     });
   }
 }

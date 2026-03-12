@@ -12,14 +12,22 @@ import {
   setDoc,
   where,
 } from '@angular/fire/firestore';
-import { collection, Timestamp } from '@firebase/firestore';
-import { User } from '@angular/fire/auth';
+import {
+  collection,
+  getCountFromServer,
+  getDoc,
+  getDocs,
+  limit,
+  Timestamp,
+} from '@firebase/firestore';
 
 import { Observable } from 'rxjs';
 import { Interner } from '../../models/stagiaire.model';
 import { Supervisor } from '../../models/superviseur.model';
 import { Internship } from '../../models/stage.model';
 import { Payment } from '../../models/payment.model';
+import { User } from '../../models/user.model';
+import { TrainingModule } from '../../models/module.model';
 
 @Injectable({
   providedIn: 'root',
@@ -29,6 +37,10 @@ export class FirestoreService {
   internerCol = 'interners';
   supervisorCol = 'supervisors';
   intershipCol = 'intership';
+  trainingModuleCol = 'trainingModules';
+  userCol = 'users';
+  enrollementCol = 'enrollments';
+
   //todoCol = (projectId: string) => `${this.projectCol}/${projectId}/todos`;
   paymentCol = (intershipId: string) =>
     `${this.intershipCol}/${intershipId}/payments`;
@@ -57,6 +69,23 @@ export class FirestoreService {
     const paymentDocRef = doc(paymentColRef, payment.id);
     return setDoc(paymentDocRef, payment, { merge: true });
   }
+  setUser(user: User<FieldValue>) {
+    const userColRef = collection(this.fs, this.userCol);
+    const userDocRef = doc(userColRef, user.id);
+    return setDoc(userDocRef, user, { merge: true });
+  }
+
+  setTrainingModule(module: TrainingModule<FieldValue>) {
+    const moduleColRef = collection(this.fs, this.trainingModuleCol);
+    const moduleDocRef = doc(moduleColRef, module.id);
+    return setDoc(moduleDocRef, module, { merge: true });
+  }
+
+  getTrainingModules() {
+    const moduleColRef = collection(this.fs, this.trainingModuleCol);
+    const q = query(moduleColRef, orderBy('createdAt', 'desc'));
+    return collectionData(q) as Observable<any[]>;
+  }
   getSupervisors() {
     const supervisorColRef = collection(this.fs, this.supervisorCol);
     const querySupervisors = query(
@@ -81,6 +110,16 @@ export class FirestoreService {
     return collectionData(internshipQuery);
   }
 
+  getUsers() {
+    const userColRef = collection(this.fs, this.userCol);
+    const queryUsers = query(userColRef, orderBy('createdAt', 'desc'));
+    return collectionData(queryUsers) as Observable<any[]>;
+  }
+  getuser(email: string) {
+    const userColRef = collection(this.fs, this.userCol);
+    const q = query(userColRef, where('email', '==', email), limit(1));
+    return collectionData(q) as Observable<any[]>;
+  }
   // getTodos(projectId: string, todoStatus: string) {
   //   const todoColRef = collection(this.fs, this.todoCol(projectId));
   //   const queryTodos = query(
@@ -105,5 +144,26 @@ export class FirestoreService {
   deleteData(colName: string, id: string) {
     return deleteDoc(doc(this.fs, colName, id));
   }
+  async countDocuments(colName: string) {
+    const colRef = collection(this.fs, colName);
+    const snapshot = await getCountFromServer(colRef);
+    return snapshot.data().count;
+  }
+  setEnrollement(colName: string, id: string, data: any) {
+    const colRef = collection(this.fs, colName);
+    const docRef = doc(colRef, id);
+    return setDoc(docRef, data, { merge: true });
+  }
+
   formatedTimestamp = (t?: Timestamp) => (t?.seconds ? t.toDate() : new Date());
+
+  async userExists(email: string) {
+    // Look for a user document where the email field matches the provided email.
+    // Previously the code attempted to read a document by id using the email string,
+    // which fails when documents use generated ids. We query by the `email` field instead.
+    const userColRef = collection(this.fs, this.userCol);
+    const q = query(userColRef, where('email', '==', email), limit(1));
+    const snap = await getDocs(q);
+    return !snap.empty;
+  }
 }

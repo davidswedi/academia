@@ -27,6 +27,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Dialog } from '@angular/cdk/dialog';
 import { Subscription } from 'rxjs';
 import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { ActionValidationComponent } from '../../../shared/action-validation.component';
 
 @Component({
   selector: 'app-setpayment',
@@ -45,8 +47,10 @@ import { MatTableModule } from '@angular/material/table';
     AsyncPipe,
     MatDialogActions,
     DatePipe,
+    MatIconModule
   ],
-  template: ` <h2 mat-dialog-title>Les payments</h2>
+  template: ` <h2 mat-dialog-title>Payments de <strong>{{intershipId.StudentName}}</strong></h2>
+  <mat-dialog-content>
     <table mat-table [dataSource]="payments" class="mat-elevation-z8">
       <ng-container matColumnDef="currency">
         <th mat-header-cell *matHeaderCellDef>Devise</th>
@@ -62,6 +66,18 @@ import { MatTableModule } from '@angular/material/table';
         <th mat-header-cell *matHeaderCellDef>Date</th>
         <td mat-cell *matCellDef="let payment">
           {{ formatedDate(payment.date) | date : 'mediumDate' }}
+        </td>
+        <td mat-footer-cell *matFooterCellDef>Total</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Action</th>
+        <td mat-cell *matCellDef="let payment">
+        <button
+                mat-icon-button
+                (click)="delete(paymentCol(intershipId.intershipId),payment.id)"
+              >
+                <mat-icon class="alert-action">delete</mat-icon>
+              </button>
         </td>
         <td mat-footer-cell *matFooterCellDef>Total</td>
       </ng-container>
@@ -83,7 +99,7 @@ import { MatTableModule } from '@angular/material/table';
     </table>
 
     <mat-divider />
-    <mat-dialog-content>
+    
       <form [formGroup]="paymentForm">
         <mat-form-field appearance="outline">
           <mat-label>Montant</mat-label>
@@ -94,6 +110,9 @@ import { MatTableModule } from '@angular/material/table';
             placeholder="50"
             formControlName="amount"
           />
+           @if (paymentForm.controls.amount.hasError('required')) {
+          <mat-error>Mettez le montant de paiement</mat-error>
+          }
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Devise</mat-label>
@@ -123,7 +142,7 @@ tr.mat-mdc-footer-row td {
   font-weight: bold;
 }
 mat-form-field{
-  margin:0.2rem;
+  margin:0.3rem;
 }
   `,
 })
@@ -138,15 +157,17 @@ export class SetpaymentComponent {
   user$ = this.authService.user;
   intershipId = inject(MAT_DIALOG_DATA);
   payments: Payment<Timestamp>[] = [];
+   actionComponent = ActionValidationComponent;
   formatedDate = (t?: Timestamp) => this.fs.formatedTimestamp(t);
   paymentForm = this.fb.nonNullable.group({
     amount: ['', Validators.required],
     currency: ['', Validators.required],
   });
-  displayedColumns: string[] = ['amount', 'currency', 'user', 'date'];
+  displayedColumns: string[] = ['amount', 'currency', 'user', 'date','actions'];
   ngOnInit(): void {
+   
     this.paymentSub = this.fs
-      .getInternshipPayments(this.intershipId)
+      .getInternshipPayments(this.intershipId.intershipId)
       .subscribe((payment) => {
         this.payments = payment as Payment<Timestamp>[];
       });
@@ -157,16 +178,26 @@ export class SetpaymentComponent {
       .reduce((acc, value) => acc + value, 0);
   }
   onSubmit(user: User | null) {
+     if (this.paymentForm.invalid) {
+      this.paymentForm.markAllAsTouched();
+
+      return;
+    }
     const payment: Payment<FieldValue> = {
-      id: this.fs.creasteDocId(this.paymentCol(this.intershipId)),
-      intershipId: this.intershipId,
+      id: this.fs.creasteDocId(this.paymentCol(this.intershipId.intershipId)),
+      intershipId: this.intershipId.intershipId,
       date: serverTimestamp(),
       user: user?.displayName!,
       ...this.paymentForm.getRawValue(),
     };
 
-    this.fs.setPayement(payment, this.intershipId);
+    this.fs.setPayement(payment, this.intershipId.intershipId);
     this.snackBar.open('Paiment effectué !', '', { duration: 3000 });
     this.dialog.closeAll();
+  }
+
+  delete(colName:string,docId:string){
+    this.fs.deleteData(colName,docId)
+    console.log('delete',colName,docId)
   }
 }

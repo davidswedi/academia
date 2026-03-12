@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import {
   MatDialogModule,
   MAT_DIALOG_DATA,
-  MatDialog,
+  MatDialogRef,
 } from '@angular/material/dialog';
 import { MatDivider } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
@@ -58,6 +58,7 @@ export class ActionValidationComponent {
   dialog = inject(Dialog);
   OnDeleteData() {
     this.fs.deleteData(this.data.colName, this.data.docId);
+    console.log(this.data);
     this.snackBar.open('Suppression réussie !', '', { duration: 3000 });
     this.dialog.closeAll();
   }

@@ -1,0 +1,443 @@
+<!-- Navigation Bar -->
+    <nav class="navbar" [class.scrolled]="isScrolled">
+      <div class="navbar-container">
+        <div class="logo">
+          <mat-icon class="logo-icon">school</mat-icon>
+          <span class="logo-text">TIT Academy</span>
+        </div>
+        <div class="nav-links">
+          <a href="#hero" class="nav-link">Accueil</a>
+          <a href="#programs" class="nav-link">Formations</a>
+          <button  mat-flat-button color="accent" class="nav-cta">
+           <a routerLink="/enrollement" style="color:white;text-decoration:none ;">S'inscrire</a>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+      <div class="hero-bg"></div>
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1 class="hero-headline">Lancez Votre Carrière Tech</h1>
+          <p class="hero-subheadline">
+            Formations professionnelles certifiantes conçues pour l'emploi,
+            dispensées par des experts de l'industrie
+          </p>
+          <p class="hero-value">
+            ✓ Certification reconnue ✓ Emploi garantit ✓ Flexibilité totale
+          </p>
+          <div class="hero-actions">
+            <button mat-flat-button class="btn-primary">
+              Commencer Gratuitement
+            </button>
+            <button mat-stroked-button class="btn-secondary">
+              Demander une Démo
+            </button>
+          </div>
+        </div>
+        <div class="hero-illustration">
+          <div class="illustration-box">
+            <mat-icon class="illustration-icon">terminal</mat-icon>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>À Propos de Notre Académie</h2>
+          <p class="section-subtitle">
+            Formant la prochaine génération de professionnels tech
+          </p>
+        </div>
+        <div class="about-grid">
+          <div class="about-card">
+            <mat-icon class="about-icon">star</mat-icon>
+            <h3>Notre Mission</h3>
+            <p>
+              Democratiser l'accès à la formation tech de qualité et créer des
+              opportunités pour tous, peu importe le background.
+            </p>
+          </div>
+          <div class="about-card">
+            <mat-icon class="about-icon">visibility</mat-icon>
+            <h3>Notre Vision</h3>
+            <p>
+              Devenir le leader référent en formation tech continentale, formant
+              10,000+ professionnels d'ici 2025.
+            </p>
+          </div>
+          <div class="about-card">
+            <mat-icon class="about-icon">verified</mat-icon>
+            <h3>Accréditation</h3>
+            <p>
+              Certifications reconnues internationalement. Partenariats avec
+              Google, Microsoft, et AWS.
+            </p>
+          </div>
+          <div class="about-card">
+            <mat-icon class="about-icon">trending_up</mat-icon>
+            <h3>Ce Qui Nous Différencie</h3>
+            <p>
+              100% pratique, mentorship personnalisé, job placement assistance,
+              et salaire garanti après certification.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Programs Section -->
+    <section id="programs" class="programs-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Nos Programmes & Cours</h2>
+          <p class="section-subtitle">
+            Formations spécialisées pour tous les niveaux
+          </p>
+        </div>
+        <div class="programs-grid">
+          <mat-card
+            class="program-card"
+            *ngFor="let m of modules$ | async; let i = index"
+            [style.animation-delay]="i * 0.1 + 's'"
+          >
+            <div class="card-image">
+              <img
+                [src]="'https://picsum.photos/400/250?random=' + (i + 10)"
+                [alt]="m.title"
+              />
+              <span class="level-badge">{{ m.level }}</span>
+            </div>
+            <mat-card-header>
+              <mat-card-title>{{ m.title }}</mat-card-title>
+              <mat-card-subtitle
+                >{{ m.duration }} mois • {{ m.tarrif }}€</mat-card-subtitle
+              >
+            </mat-card-header>
+            <mat-card-content>
+              <p class="program-description">{{ m.description }}</p>
+              <div class="objectives">
+                <strong>Objectifs clés:</strong>
+                <ul>
+                  <li *ngFor="let obj of m.objectives | slice : 0 : 3">
+                    {{ obj }}
+                  </li>
+                </ul>
+              </div>
+            </mat-card-content>
+            <mat-divider></mat-divider>
+            <mat-card-actions>
+              <a mat-button color="primary" [routerLink]="['/module', m.id]">En savoir plus</a>
+              <button mat-icon-button matTooltip="Ajouter aux favoris">
+                <mat-icon>favorite_border</mat-icon>
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Choose Us Section -->
+    <section id="why-us" class="why-us-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Pourquoi Nous Choisir ?</h2>
+          <p class="section-subtitle">Les avantages qui font la différence</p>
+        </div>
+        <div class="benefits-grid">
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <mat-icon>school</mat-icon>
+            </div>
+            <h3>Formateurs Certifiés</h3>
+            <p>
+              Équipe d'experts avec 10+ ans d'expérience dans l'industrie tech
+            </p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <mat-icon>engineering</mat-icon>
+            </div>
+            <h3>Apprentissage Pratique</h3>
+            <p>80% de travaux pratiques, projets réels, labs interactifs</p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <mat-icon>build</mat-icon>
+            </div>
+            <h3>Projets Réels</h3>
+            <p>
+              Travail sur des projets clients, portfolio professionnel inclus
+            </p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <mat-icon>support_agent</mat-icon>
+            </div>
+            <h3>Support Carrière</h3>
+            <p>
+              CV coaching, interview prep, job board exclusif, placement
+              assistance
+            </p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <mat-icon>schedule</mat-icon>
+            </div>
+            <h3>Planning Flexible</h3>
+            <p>
+              Cours en ligne et en présentiel, horaires adaptés à votre rythme
+            </p>
+          </div>
+          <div class="benefit-item">
+            <div class="benefit-icon">
+              <mat-icon>card_giftcard</mat-icon>
+            </div>
+            <h3>Certification Reconnue</h3>
+            <p>
+              Diplômes internationaux, OpenBadges, accès à la communauté alumni
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Comment Ça Marche ?</h2>
+          <p class="section-subtitle">
+            4 étapes simples pour transformer votre carrière
+          </p>
+        </div>
+        <div class="steps-container">
+          <div class="step" *ngFor="let step of steps; let i = index">
+            <div class="step-number">{{ i + 1 }}</div>
+            <div class="step-content">
+              <h3>{{ step.title }}</h3>
+              <p>{{ step.description }}</p>
+            </div>
+            <div class="step-icon">
+              <mat-icon>{{ step.icon }}</mat-icon>
+            </div>
+            <div *ngIf="i < steps.length - 1" class="step-arrow">
+              <mat-icon>arrow_forward</mat-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Success Stories / Testimonials -->
+    <section id="testimonials" class="testimonials-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Histoires de Succès</h2>
+          <p class="section-subtitle">
+            Décourez comment nos étudiants ont transformé leur carrière
+          </p>
+        </div>
+        <div class="testimonials-grid">
+          <mat-card
+            class="testimonial-card"
+            *ngFor="let testimonial of testimonials"
+          >
+            <div class="testimonial-header">
+              <div class="avatar" [style.background-color]="testimonial.color">
+                {{ testimonial.name.charAt(0) }}
+              </div>
+              <div class="testimonial-info">
+                <h4>{{ testimonial.name }}</h4>
+                <p class="testimonial-role">{{ testimonial.role }}</p>
+              </div>
+            </div>
+            <div class="testimonial-quote">
+              <mat-icon class="quote-icon">format_quote</mat-icon>
+              <p>{{ testimonial.quote }}</p>
+            </div>
+            <div class="testimonial-rating">
+              <mat-icon *ngFor="let _ of [1, 2, 3, 4, 5]" class="star"
+                >star</mat-icon
+              >
+            </div>
+          </mat-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats-section">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-item">
+            <h3>12,500+</h3>
+            <p>Étudiants Formés</p>
+          </div>
+          <div class="stat-item">
+            <h3>95%</h3>
+            <p>Taux de Satisfaction</p>
+          </div>
+          <div class="stat-item">
+            <h3>200+</h3>
+            <p>Partenaires Emploi</p>
+          </div>
+          <div class="stat-item">
+            <h3>8+</h3>
+            <p>Années d'Expérience</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Tarification Transparente</h2>
+          <p class="section-subtitle">
+            Packages adaptés à votre budget et objectifs
+          </p>
+        </div>
+        <div class="pricing-grid">
+          <mat-card class="pricing-card">
+            <h3>Solo</h3>
+            <p class="price">500€</p>
+            <p class="pricing-period">par cours</p>
+            <mat-divider></mat-divider>
+            <ul class="pricing-features">
+              <li><mat-icon>check</mat-icon> 1 Cours au choix</li>
+              <li><mat-icon>check</mat-icon> Accès 3 mois</li>
+              <li><mat-icon>check</mat-icon> Certification</li>
+              <li><mat-icon>close</mat-icon> Job placement</li>
+            </ul>
+            <button mat-flat-button class="btn-primary">Commencer</button>
+          </mat-card>
+
+          <mat-card class="pricing-card featured">
+            <div class="featured-badge">POPULAIRE</div>
+            <h3>Bootcamp</h3>
+            <p class="price">2,500€</p>
+            <p class="pricing-period">3 cours intensifs</p>
+            <mat-divider></mat-divider>
+            <ul class="pricing-features">
+              <li><mat-icon>check</mat-icon> 3 Cours intensifs</li>
+              <li><mat-icon>check</mat-icon> Accès 6 mois</li>
+              <li><mat-icon>check</mat-icon> Mentorat 1-on-1</li>
+              <li><mat-icon>check</mat-icon> Job placement</li>
+            </ul>
+            <button mat-flat-button color="accent" class="btn-primary">
+              Débuter Maintenant
+            </button>
+          </mat-card>
+
+          <mat-card class="pricing-card">
+            <h3>Enterprise</h3>
+            <p class="price">Devis</p>
+            <p class="pricing-period">formation d'équipe</p>
+            <mat-divider></mat-divider>
+            <ul class="pricing-features">
+              <li><mat-icon>check</mat-icon> Cours Personnalisés</li>
+              <li><mat-icon>check</mat-icon> Support Dédié</li>
+              <li><mat-icon>check</mat-icon> Assessment & Audit</li>
+              <li><mat-icon>check</mat-icon> Bourse Possible</li>
+            </ul>
+            <button mat-stroked-button class="btn-secondary">
+              Demander Devis
+            </button>
+          </mat-card>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="faq-section">
+      <div class="container">
+        <div class="section-header">
+          <h2>Questions Fréquemment Posées</h2>
+          <p class="section-subtitle">Trouvez réponses à vos interrogations</p>
+        </div>
+        <mat-accordion class="faq-accordion">
+          <mat-expansion-panel *ngFor="let faq of faqs">
+            <mat-expansion-panel-header>
+              <mat-panel-title>{{ faq.question }}</mat-panel-title>
+            </mat-expansion-panel-header>
+            <p>{{ faq.answer }}</p>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
+    </section>
+
+    <!-- Final CTA Section -->
+    <section id="final-cta" class="final-cta-section">
+      <div class="cta-content">
+        <h2>Prêt à Transformer Votre Carrière ?</h2>
+        <p>
+          Rejoignez des milliers de professionnels qui ont réussi avec
+          TechAcademy
+        </p>
+        <div class="cta-actions">
+          <button mat-flat-button color="accent" (click)="gotoEnrelloment()" class="btn-large">
+            S'inscrire Maintenant
+          </button>
+          <button mat-stroked-button class="btn-large btn-white">
+            Discuter avec un Conseiller
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-column">
+          <h4>TechAcademy</h4>
+          <p>
+            Transformez votre carrière avec nos formations tech de classe
+            mondiale.
+          </p>
+          <div class="social-links">
+            <a href="#"><mat-icon>facebook</mat-icon></a>
+            <a href="#"><mat-icon>public</mat-icon></a>
+            <a href="#"><mat-icon>mail</mat-icon></a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h4>Produits</h4>
+          <ul>
+            <li><a href="#programs">Cours</a></li>
+            <li><a href="#bootcamp">Bootcamps</a></li>
+            <li><a href="#workshops">Ateliers</a></li>
+            <li><a href="#mentoring">Mentorat</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Ressources</h4>
+          <ul>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#community">Communauté</a></li>
+            <li><a href="#events">Événements</a></li>
+            <li><a href="#careers">Carrières</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h4>Contact</h4>
+          <p>Email: contact-techacademy.com</p>
+          <p>Tél: +1 (555) 123-4567</p>
+          <p>Adresse: 123 Tech Street, Innovation City</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; {{ year }} TechAcademy. Tous droits réservés.</p>
+        <div class="footer-links">
+          <a href="#privacy">Politique de Confidentialité</a>
+          <a href="#terms">Conditions d'Utilisation</a>
+          <a href="#cookies">Gestion des Cookies</a>
+        </div>
+      </div>
+    </footer>

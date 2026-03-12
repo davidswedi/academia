@@ -22,7 +22,7 @@ import { TitleCasePipe } from '@angular/common';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { IS_MEDIUM } from '../../../app.constants';
 import { WindowsObserverService } from '../../../core/services/utilities/windows-observer.service';
-
+import * as XLSX from 'xlsx';
 @Component({
   selector: 'app-interner',
   imports: [
@@ -46,7 +46,7 @@ import { WindowsObserverService } from '../../../core/services/utilities/windows
         filName="fileName"
       ></app-header-table-actions>
       @if (viewPort() >= mediumWidth) {
-      <button mat-icon-button (click)="exportExcel()">
+      <button mat-icon-button (click)="exportexcel()">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           x="0px"
@@ -106,6 +106,7 @@ import { WindowsObserverService } from '../../../core/services/utilities/windows
 
       <div class="table-container">
         <table
+          id="excel-table"
           mat-table
           [dataSource]="dataSource"
           multiTemplateDataRows
@@ -203,7 +204,7 @@ import { WindowsObserverService } from '../../../core/services/utilities/windows
                       <button
                         mat-icon-button
                         (click)="
-                          callActionValidationComponent(internerCol, element.id)
+                          callActionValidationComponent(element.id, internerCol)
                         "
                       >
                         <mat-icon class="alert-action">delete</mat-icon>
@@ -336,6 +337,7 @@ export default class InternerComponent {
   actionComponent = ActionValidationComponent;
   formatedDate = (t?: Timestamp) => this.fs.formatedTimestamp(t);
   fileName = 'listeStagiaire.xlsx';
+  elementId = 'excel-table';
   displayedColumns: string[] = ['id', 'name', 'gender', 'phone'];
   private bo = inject(BreakpointObserver);
   ngAfterViewInit() {
@@ -404,9 +406,18 @@ export default class InternerComponent {
       },
     });
   }
-  exportExcel() {
-    this.es.exportexcel(this.fileName);
-  }
+  exportexcel(): void {
+      /* pass here the table id */
+      let element = document.getElementById('excel-table');
+      const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(element);
+  
+      /* generate workbook and add the worksheet */
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Feuille1');
+  
+      /* save to file */
+      XLSX.writeFile(wb, 'listeStagiaire.xlsx');
+    }
 }
 export interface PeriodicElement {
   name: string;
